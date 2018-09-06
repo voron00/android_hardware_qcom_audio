@@ -328,7 +328,7 @@ LOCAL_SHARED_LIBRARIES := \
         liblog \
         libcutils \
         libtinyalsa \
-        libtinycompress_vendor \
+        libtinycompress \
         libaudioroute \
         libdl \
         libaudioutils \
@@ -355,7 +355,7 @@ LOCAL_SHARED_LIBRARIES += libqap_wrapper liblog
 endif
 
 ifneq ($(strip $(TARGET_USES_AOSP_FOR_AUDIO)),true)
-    LOCAL_SHARED_LIBRARIES += libtinycompress_vendor
+    LOCAL_SHARED_LIBRARIES += libtinycompress
 else
     LOCAL_SHARED_LIBRARIES += libtinycompress
 endif
