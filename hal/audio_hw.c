@@ -6836,15 +6836,12 @@ static int adev_set_parameters(struct audio_hw_device *dev, const char *kvpairs)
         if (strcmp(value, AUDIO_PARAMETER_VALUE_ON) == 0){
             adev->bt_sco_on = true;
         } else {
-            ALOGD("route device to handset/mic when sco is off");
+            ALOGD("route device to handset mic when sco is off");
             adev->bt_sco_on = false;
             list_for_each(node, &adev->usecase_list) {
                 usecase = node_to_item(node, struct audio_usecase, list);
-                if ((usecase->type == PCM_PLAYBACK) && usecase->stream.out &&
-                    (usecase->stream.out->devices & AUDIO_DEVICE_OUT_ALL_SCO))
-                    usecase->stream.out->devices = AUDIO_DEVICE_OUT_EARPIECE;
-                else if ((usecase->type == PCM_CAPTURE) && usecase->stream.in &&
-                         (usecase->stream.in->device & AUDIO_DEVICE_IN_ALL_SCO))
+                if ((usecase->type == PCM_CAPTURE) && usecase->stream.in &&
+                    (usecase->stream.in->device & AUDIO_DEVICE_IN_ALL_SCO))
                     usecase->stream.in->device = AUDIO_DEVICE_IN_BUILTIN_MIC;
                 else
                     continue;
@@ -7798,10 +7795,10 @@ static int check_a2dp_restore_l(struct audio_device *adev, struct stream_out *ou
 
     if (restore) {
         // restore A2DP device for active usecases and unmute if required
-        if ((out->devices & AUDIO_DEVICE_OUT_ALL_A2DP) &&
-            (uc_info->out_snd_device != SND_DEVICE_OUT_BT_A2DP)) {
+        if (out->devices & AUDIO_DEVICE_OUT_ALL_A2DP) {
             ALOGD("%s: restoring A2dp and unmuting stream", __func__);
-            select_devices(adev, uc_info->id);
+            if (uc_info->out_snd_device != SND_DEVICE_OUT_BT_A2DP)
+                select_devices(adev, uc_info->id);
             pthread_mutex_lock(&out->compr_mute_lock);
             if ((out->flags & AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD) &&
                 (out->a2dp_compress_mute)) {
